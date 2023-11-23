@@ -31,7 +31,6 @@ void fr_md4_calc(uint8_t out[MD4_DIGEST_LENGTH], uint8_t const *in, size_t inlen
 	fr_md4_destroy(&ctx);
 }
 
-#ifndef HAVE_OPENSSL_MD4_H
 /*
  * This code implements the MD4 message-digest algorithm.
  * The algorithm is due to Ron Rivest.	This code was
@@ -307,4 +306,3 @@ void fr_md4_transform(uint32_t state[4], uint8_t const block[MD4_BLOCK_LENGTH])
 	state[2] += c;
 	state[3] += d;
 }
-#endif

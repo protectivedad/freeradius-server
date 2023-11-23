@@ -134,7 +134,7 @@ HOSTINFO	= @HOSTINFO@
 #  needs access to the SHA internals.
 #
 ifeq "$(WITH_OPENSSL)" "yes"
-CFLAGS		+=  -DWITH_OPENSSL_MD4 -DWITH_OPENSSL_MD5
+CFLAGS		+=  -DWITH_OPENSSL_MD5
 CPPFLAGS	:= "$(OPENSSL_CPPFLAGS) $(CPPFLAGS)"
 endif
 

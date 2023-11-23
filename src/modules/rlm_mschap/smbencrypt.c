@@ -43,7 +43,6 @@ static char const hex[] = "0123456789ABCDEF";
 #  include <openssl/provider.h>
 
 static OSSL_PROVIDER *openssl_default_provider = NULL;
-static OSSL_PROVIDER *openssl_legacy_provider = NULL;
 
 #define ERROR(_x) fprintf(stderr, _x)
 
@@ -58,17 +57,6 @@ static int openssl3_init(void)
 		return -1;
 	}
 
-	/*
-	 *	Needed for MD4
-	 *
-	 *	https://www.openssl.org/docs/man3.0/man7/migration_guide.html#Legacy-Algorithms
-	 */
-	openssl_legacy_provider = OSSL_PROVIDER_load(NULL, "legacy");
-	if (!openssl_legacy_provider) {
-		ERROR("(TLS) Failed loading legacy provider");
-		return -1;
-	}
-
 	return 0;
 }
 
@@ -78,11 +66,6 @@ static void openssl3_free(void)
 		ERROR("Failed unloading default provider");
 	}
 	openssl_default_provider = NULL;
-
-	if (openssl_legacy_provider && !OSSL_PROVIDER_unload(openssl_legacy_provider)) {
-		ERROR("Failed unloading legacy provider");
-	}
-	openssl_legacy_provider = NULL;
 }
 #else
 #define openssl3_init()

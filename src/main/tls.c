@@ -65,7 +65,6 @@ USES_APPLE_DEPRECATED_API	/* OpenSSL API has been deprecated by Apple */
 #  include <openssl/provider.h>
 
 static OSSL_PROVIDER *openssl_default_provider = NULL;
-static OSSL_PROVIDER *openssl_legacy_provider = NULL;
 #endif
 
 #define LOG_PREFIX "tls"
@@ -3699,17 +3698,6 @@ int tls_global_init(TLS_UNUSED bool spawn_flag, TLS_UNUSED bool check)
 		ERROR("(TLS) Failed loading default provider");
 		return -1;
 	}
-
-	/*
-	 *	Needed for MD4
-	 *
-	 *	https://www.openssl.org/docs/man3.0/man7/migration_guide.html#Legacy-Algorithms
-	 */
-	openssl_legacy_provider = OSSL_PROVIDER_load(NULL, "legacy");
-	if (!openssl_legacy_provider) {
-		ERROR("(TLS) Failed loading legacy provider");
-		return -1;
-	}
 #endif
 
 	return 0;
@@ -3783,11 +3771,6 @@ void tls_global_cleanup(void)
 		ERROR("Failed unloading default provider");
 	}
 	openssl_default_provider = NULL;
-
-	if (openssl_legacy_provider && !OSSL_PROVIDER_unload(openssl_legacy_provider)) {
-		ERROR("Failed unloading legacy provider");
-	}
-	openssl_legacy_provider = NULL;
 #endif
 
 	CONF_modules_unload(1);
