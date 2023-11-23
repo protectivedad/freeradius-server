@@ -953,7 +953,7 @@ after_chain:
 	}
 	if (vp) vp->vp_integer = state->mtu;
 
-	if (conf->session_cache_enable) state->allow_session_resumption = true; /* otherwise it's false */
+	if (/*conf->session_cache_enable*/0) state->allow_session_resumption = true; /* otherwise it's false */
 
 	return state;
 }
@@ -4500,7 +4500,7 @@ post_ca:
 	/*
 	 *	Callbacks, etc. for session resumption.
 	 */
-	if (conf->session_cache_enable) {
+	if (/*conf->session_cache_enable*/0) {
 		/*
 		 *	Cache sessions on disk if requested.
 		 */
@@ -4580,7 +4580,7 @@ post_ca:
 	/*
 	 *	Setup session caching
 	 */
-	if (conf->session_cache_enable) {
+	if (/*conf->session_cache_enable*/0) {
 		/*
 		 *	Create a unique context Id per EAP-TLS configuration.
 		 */
@@ -4868,7 +4868,7 @@ fr_tls_server_conf_t *tls_server_conf_parse(CONF_SECTION *cs)
 		goto error;
 	}
 
-	if (conf->session_cache_enable) {
+	if (/*conf->session_cache_enable*/0) {
 		CONF_SECTION	*subcs;
 		CONF_ITEM	*ci;
 
