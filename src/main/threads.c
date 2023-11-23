@@ -265,6 +265,7 @@ static void ssl_locking_function(int mode, int n, UNUSED char const *file, UNUSE
  */
 int tls_mutexes_init(void)
 {
+#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 	int i, num;
 
 	rad_assert(ssl_mutexes == NULL);
@@ -282,6 +283,7 @@ int tls_mutexes_init(void)
 	}
 
 	CRYPTO_set_locking_callback(ssl_locking_function);
+#endif
 
 	return 0;
 }

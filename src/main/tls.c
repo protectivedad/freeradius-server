@@ -60,6 +60,7 @@ USES_APPLE_DEPRECATED_API	/* OpenSSL API has been deprecated by Apple */
 #    include <openssl/evp.h>
 #  endif
 #  include <openssl/ssl.h>
+#  include <openssl/dh.h>
 
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
 #  include <openssl/provider.h>
@@ -2997,7 +2998,7 @@ int cbtls_verify(int ok, X509_STORE_CTX *ctx)
 	int		my_ok = ok;
 
 	ASN1_INTEGER	*sn = NULL;
-	ASN1_TIME	*asn_time = NULL;
+	const ASN1_TIME	*asn_time = NULL;
 	VALUE_PAIR	**certs;
 	char **identity;
 #ifdef HAVE_OPENSSL_OCSP_H
@@ -3088,7 +3089,7 @@ int cbtls_verify(int ok, X509_STORE_CTX *ctx)
 	 *	Get the Expiration Date
 	 */
 	buf[0] = '\0';
-	asn_time = X509_get_notAfter(client_cert);
+	asn_time = X509_get0_notAfter(client_cert);
 	if (certs && (lookup <= 1) && asn_time &&
 	    (asn_time->length < (int) sizeof(buf))) {
 		memcpy(buf, (char*) asn_time->data, asn_time->length);
@@ -3101,7 +3102,7 @@ int cbtls_verify(int ok, X509_STORE_CTX *ctx)
 	 *	Get the Valid Since Date
 	 */
 	buf[0] = '\0';
-	asn_time = X509_get_notBefore(client_cert);
+	asn_time = X509_get0_notBefore(client_cert);
 	if (certs && (lookup <= 1) && asn_time &&
 	    (asn_time->length < (int) sizeof(buf))) {
 		memcpy(buf, (char*) asn_time->data, asn_time->length);
@@ -3665,10 +3666,12 @@ static int set_ecdh_curve(SSL_CTX *ctx, char const *ecdh_curve, bool disable_sin
  */
 int tls_global_init(TLS_UNUSED bool spawn_flag, TLS_UNUSED bool check)
 {
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
 	SSL_load_error_strings();	/* readable error messages (examples show call before library_init) */
 	SSL_library_init();		/* initialize library */
 	OpenSSL_add_all_algorithms();	/* required for SHA2 in OpenSSL < 0.9.8o and 1.0.0.a */
 	CONF_modules_load_file(NULL, NULL, 0);
+#endif
 
 	/*
 	 *	Initialize the index for the certificates.
@@ -3757,6 +3760,7 @@ int tls_global_version_check(char const *acknowledged)
  */
 void tls_global_cleanup(void)
 {
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
 #if OPENSSL_VERSION_NUMBER < 0x10000000L
 	ERR_remove_state(0);
 #elif OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
@@ -3777,6 +3781,7 @@ void tls_global_cleanup(void)
 	ERR_free_strings();
 	EVP_cleanup();
 	CRYPTO_cleanup_all_ex_data();
+#endif
 }
 
 

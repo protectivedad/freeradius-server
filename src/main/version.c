@@ -54,7 +54,7 @@ int ssl_check_consistency(void)
 {
 	long ssl_linked;
 
-	ssl_linked = SSLeay();
+	ssl_linked = OpenSSL_version_num();
 
 	/*
 	 *	Major and minor versions mismatch, that's bad.
@@ -152,7 +152,7 @@ char const *ssl_version_num(void)
 {
 	long ssl_linked;
 
-	ssl_linked = SSLeay();
+	ssl_linked = OpenSSL_version_num();
 	return ssl_version_by_num((uint32_t)ssl_linked);
 }
 
@@ -188,10 +188,10 @@ char const *ssl_version(void)
 {
 	static char buffer[256];
 
-	uint32_t v = SSLeay();
+	uint32_t v = OpenSSL_version_num();
 
 	snprintf(buffer, sizeof(buffer), "%s 0x%.8x (%s)",
-		 SSLeay_version(SSLEAY_VERSION),		/* Not all builds include a useful version number */
+		 OpenSSL_version(OPENSSL_VERSION),		/* Not all builds include a useful version number */
 		 v,
 		 ssl_version_by_num(v));
 
